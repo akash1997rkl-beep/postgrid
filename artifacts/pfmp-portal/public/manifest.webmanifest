@@ -1,0 +1,19 @@
+{
+  "name": "PFMP Operations",
+  "short_name": "PFMP",
+  "description": "Postal Field Management Platform for India Post field operations",
+  "theme_color": "#dc2626",
+  "background_color": "#f8fafc",
+  "display": "standalone",
+  "orientation": "any",
+  "start_url": "/",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
