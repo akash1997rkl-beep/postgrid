@@ -1,0 +1,1097 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: Postal Field Management Platform API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: users
+    description: User management
+  - name: dashboard
+    description: Dashboard summary data
+  - name: beats
+    description: Beat management
+  - name: deliveries
+    description: Delivery management
+  - name: articles
+    description: Article/mail items tracking
+  - name: attendance
+    description: Attendance management
+  - name: postmen
+    description: Postman location tracking
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  # Auth endpoints
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout
+      responses:
+        "204":
+          description: Logged out
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Not authenticated
+
+  # Dashboard endpoints
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [dashboard]
+      summary: Get dashboard statistics
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /dashboard/activity:
+    get:
+      operationId: getDashboardActivity
+      tags: [dashboard]
+      summary: Get recent activity feed
+      responses:
+        "200":
+          description: Recent activities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Activity"
+
+  # Users endpoints
+  /users:
+    get:
+      operationId: getUsers
+      tags: [users]
+      summary: List all users
+      responses:
+        "200":
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+    post:
+      operationId: createUser
+      tags: [users]
+      summary: Create a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /users/{id}:
+    get:
+      operationId: getUser
+      tags: [users]
+      summary: Get user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateUser
+      tags: [users]
+      summary: Update a user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteUser
+      tags: [users]
+      summary: Delete a user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+  # Beats endpoints
+  /beats:
+    get:
+      operationId: getBeats
+      tags: [beats]
+      summary: List all beats
+      responses:
+        "200":
+          description: List of beats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Beat"
+    post:
+      operationId: createBeat
+      tags: [beats]
+      summary: Create a beat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BeatInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Beat"
+
+  /beats/{id}:
+    get:
+      operationId: getBeat
+      tags: [beats]
+      summary: Get beat by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Beat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Beat"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateBeat
+      tags: [beats]
+      summary: Update a beat
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BeatUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Beat"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteBeat
+      tags: [beats]
+      summary: Delete a beat
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # Deliveries endpoints
+  /deliveries:
+    get:
+      operationId: getDeliveries
+      tags: [deliveries]
+      summary: List all deliveries
+      responses:
+        "200":
+          description: List of deliveries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Delivery"
+    post:
+      operationId: createDelivery
+      tags: [deliveries]
+      summary: Create a delivery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeliveryInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Delivery"
+
+  /deliveries/{id}:
+    get:
+      operationId: getDelivery
+      tags: [deliveries]
+      summary: Get delivery by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Delivery
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Delivery"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateDelivery
+      tags: [deliveries]
+      summary: Update a delivery
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeliveryUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Delivery"
+        "404":
+          description: Not found
+
+  /deliveries/{id}/status:
+    patch:
+      operationId: updateDeliveryStatus
+      tags: [deliveries]
+      summary: Update delivery status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeliveryStatusUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Delivery"
+        "404":
+          description: Not found
+
+  # Articles endpoints
+  /articles:
+    get:
+      operationId: getArticles
+      tags: [articles]
+      summary: List all articles/mail items
+      responses:
+        "200":
+          description: List of articles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Article"
+    post:
+      operationId: createArticle
+      tags: [articles]
+      summary: Create an article
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArticleInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Article"
+
+  /articles/{id}:
+    get:
+      operationId: getArticle
+      tags: [articles]
+      summary: Get article by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Article
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Article"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateArticle
+      tags: [articles]
+      summary: Update an article
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ArticleUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Article"
+        "404":
+          description: Not found
+
+  # Attendance endpoints
+  /attendance:
+    get:
+      operationId: getAttendance
+      tags: [attendance]
+      summary: List attendance records
+      responses:
+        "200":
+          description: Attendance records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AttendanceRecord"
+
+  /attendance/today:
+    get:
+      operationId: getTodayAttendance
+      tags: [attendance]
+      summary: Get today's attendance
+      responses:
+        "200":
+          description: Today's attendance records
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AttendanceRecord"
+
+  /attendance/checkin:
+    post:
+      operationId: checkIn
+      tags: [attendance]
+      summary: Check in a postman
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AttendanceCheckIn"
+      responses:
+        "201":
+          description: Checked in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttendanceRecord"
+
+  /attendance/{id}/checkout:
+    patch:
+      operationId: checkOut
+      tags: [attendance]
+      summary: Check out a postman
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Checked out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AttendanceRecord"
+        "404":
+          description: Not found
+
+  # Postmen location tracking
+  /postmen:
+    get:
+      operationId: getPostmenLocations
+      tags: [postmen]
+      summary: Get all postman locations
+      responses:
+        "200":
+          description: Postman locations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PostmanLocation"
+
+  /postmen/{id}/location:
+    patch:
+      operationId: updatePostmanLocation
+      tags: [postmen]
+      summary: Update postman GPS location
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LocationUpdate"
+      responses:
+        "200":
+          description: Location updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostmanLocation"
+        "404":
+          description: Not found
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    # Auth schemas
+    LoginInput:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+
+    # User schemas
+    User:
+      type: object
+      required: [id, username, name, role, email, division]
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+          enum: [super_admin, circle_admin, region_admin, division_admin, sub_division, inspector, supervisor, postman, mts, customer]
+        email:
+          type: string
+        phone:
+          type: ["string", "null"]
+        division:
+          type: string
+        employeeId:
+          type: ["string", "null"]
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UserInput:
+      type: object
+      required: [username, name, role, email, division, password]
+      properties:
+        username:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+          enum: [super_admin, circle_admin, region_admin, division_admin, sub_division, inspector, supervisor, postman, mts, customer]
+        email:
+          type: string
+        phone:
+          type: string
+        division:
+          type: string
+        employeeId:
+          type: string
+        password:
+          type: string
+        isActive:
+          type: boolean
+
+    UserUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+          enum: [super_admin, circle_admin, region_admin, division_admin, sub_division, inspector, supervisor, postman, mts, customer]
+        email:
+          type: string
+        phone:
+          type: string
+        division:
+          type: string
+        employeeId:
+          type: string
+        isActive:
+          type: boolean
+
+    # Dashboard schemas
+    DashboardStats:
+      type: object
+      required: [totalDeliveries, pendingDeliveries, deliveredToday, activePostmen, totalBeats, presentToday, totalArticles, deliveryRate]
+      properties:
+        totalDeliveries:
+          type: integer
+        pendingDeliveries:
+          type: integer
+        deliveredToday:
+          type: integer
+        activePostmen:
+          type: integer
+        totalBeats:
+          type: integer
+        presentToday:
+          type: integer
+        totalArticles:
+          type: integer
+        deliveryRate:
+          type: number
+
+    Activity:
+      type: object
+      required: [id, type, message, timestamp]
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [delivery, attendance, article, user, beat]
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        userId:
+          type: ["integer", "null"]
+        userName:
+          type: ["string", "null"]
+
+    # Beat schemas
+    Beat:
+      type: object
+      required: [id, name, code, division, postOffice, totalHouses, totalArticles, status, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: string
+        division:
+          type: string
+        postOffice:
+          type: string
+        totalHouses:
+          type: integer
+        totalArticles:
+          type: integer
+        assignedPostmanId:
+          type: ["integer", "null"]
+        assignedPostmanName:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [active, inactive, under_survey]
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    BeatInput:
+      type: object
+      required: [name, code, division, postOffice, totalHouses]
+      properties:
+        name:
+          type: string
+        code:
+          type: string
+        division:
+          type: string
+        postOffice:
+          type: string
+        totalHouses:
+          type: integer
+        totalArticles:
+          type: integer
+        assignedPostmanId:
+          type: integer
+        status:
+          type: string
+          enum: [active, inactive, under_survey]
+        latitude:
+          type: number
+        longitude:
+          type: number
+
+    BeatUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        code:
+          type: string
+        division:
+          type: string
+        postOffice:
+          type: string
+        totalHouses:
+          type: integer
+        totalArticles:
+          type: integer
+        assignedPostmanId:
+          type: ["integer", "null"]
+        status:
+          type: string
+          enum: [active, inactive, under_survey]
+        latitude:
+          type: ["number", "null"]
+        longitude:
+          type: ["number", "null"]
+
+    # Delivery schemas
+    Delivery:
+      type: object
+      required: [id, trackingNumber, recipientName, recipientAddress, beatId, beatName, postmanId, postmanName, articleType, status, scheduledDate, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        trackingNumber:
+          type: string
+        recipientName:
+          type: string
+        recipientAddress:
+          type: string
+        recipientPhone:
+          type: ["string", "null"]
+        beatId:
+          type: integer
+        beatName:
+          type: string
+        postmanId:
+          type: integer
+        postmanName:
+          type: string
+        articleType:
+          type: string
+          enum: [letter, parcel, speed_post, registered, cod, money_order, ems]
+        status:
+          type: string
+          enum: [pending, out_for_delivery, delivered, returned, undelivered, attempted]
+        scheduledDate:
+          type: string
+          format: date
+        deliveredAt:
+          type: ["string", "null"]
+          format: date-time
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    DeliveryInput:
+      type: object
+      required: [trackingNumber, recipientName, recipientAddress, beatId, postmanId, articleType, scheduledDate]
+      properties:
+        trackingNumber:
+          type: string
+        recipientName:
+          type: string
+        recipientAddress:
+          type: string
+        recipientPhone:
+          type: string
+        beatId:
+          type: integer
+        postmanId:
+          type: integer
+        articleType:
+          type: string
+          enum: [letter, parcel, speed_post, registered, cod, money_order, ems]
+        scheduledDate:
+          type: string
+          format: date
+        notes:
+          type: string
+
+    DeliveryUpdate:
+      type: object
+      properties:
+        recipientName:
+          type: string
+        recipientAddress:
+          type: string
+        recipientPhone:
+          type: string
+        beatId:
+          type: integer
+        postmanId:
+          type: integer
+        articleType:
+          type: string
+          enum: [letter, parcel, speed_post, registered, cod, money_order, ems]
+        scheduledDate:
+          type: string
+          format: date
+        notes:
+          type: string
+
+    DeliveryStatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [pending, out_for_delivery, delivered, returned, undelivered, attempted]
+        notes:
+          type: string
+
+    # Article schemas
+    Article:
+      type: object
+      required: [id, barcode, type, senderName, recipientName, recipientAddress, beatId, beatName, status, weight, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        barcode:
+          type: string
+        type:
+          type: string
+          enum: [letter, parcel, speed_post, registered, cod, money_order, ems, insured]
+        senderName:
+          type: string
+        senderAddress:
+          type: ["string", "null"]
+        recipientName:
+          type: string
+        recipientAddress:
+          type: string
+        beatId:
+          type: integer
+        beatName:
+          type: string
+        status:
+          type: string
+          enum: [received, in_transit, out_for_delivery, delivered, returned, undelivered]
+        weight:
+          type: number
+        postageAmount:
+          type: ["number", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ArticleInput:
+      type: object
+      required: [barcode, type, senderName, recipientName, recipientAddress, beatId, weight]
+      properties:
+        barcode:
+          type: string
+        type:
+          type: string
+          enum: [letter, parcel, speed_post, registered, cod, money_order, ems, insured]
+        senderName:
+          type: string
+        senderAddress:
+          type: string
+        recipientName:
+          type: string
+        recipientAddress:
+          type: string
+        beatId:
+          type: integer
+        weight:
+          type: number
+        postageAmount:
+          type: number
+
+    ArticleUpdate:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [letter, parcel, speed_post, registered, cod, money_order, ems, insured]
+        senderName:
+          type: string
+        senderAddress:
+          type: string
+        recipientName:
+          type: string
+        recipientAddress:
+          type: string
+        beatId:
+          type: integer
+        status:
+          type: string
+          enum: [received, in_transit, out_for_delivery, delivered, returned, undelivered]
+        weight:
+          type: number
+        postageAmount:
+          type: number
+
+    # Attendance schemas
+    AttendanceRecord:
+      type: object
+      required: [id, userId, userName, date, checkInTime, status, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        userName:
+          type: string
+        date:
+          type: string
+          format: date
+        checkInTime:
+          type: string
+          format: date-time
+        checkOutTime:
+          type: ["string", "null"]
+          format: date-time
+        status:
+          type: string
+          enum: [present, absent, leave, half_day]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    AttendanceCheckIn:
+      type: object
+      required: [userId]
+      properties:
+        userId:
+          type: integer
+        notes:
+          type: string
+
+    # Postman location schemas
+    PostmanLocation:
+      type: object
+      required: [id, userId, userName, latitude, longitude, lastUpdated, isOnDuty]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        userName:
+          type: string
+        beatId:
+          type: ["integer", "null"]
+        beatName:
+          type: ["string", "null"]
+        latitude:
+          type: number
+        longitude:
+          type: number
+        lastUpdated:
+          type: string
+          format: date-time
+        isOnDuty:
+          type: boolean
+        deliveriesCompleted:
+          type: integer
+
+    LocationUpdate:
+      type: object
+      required: [latitude, longitude]
+      properties:
+        latitude:
+          type: number
+        longitude:
+          type: number
+        isOnDuty:
+          type: boolean
