@@ -21,6 +21,11 @@
     "skipLibCheck": true,
     "target": "es2022",
     "types": [],
-    "customConditions": ["workspace"]
+    "customConditions": ["workspace"],
+        "paths": {
+      "@workspace/db": ["lib/db/src"],
+      "@workspace/api-zod": ["lib/api-zod/src"],
+      "@workspace/api-client-react": ["lib/api-client-react/src"]
+    }
   }
 }
